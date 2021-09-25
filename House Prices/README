@@ -1,0 +1,48 @@
+House Prices - Advanced Regression Techniques
+https://www.kaggle.com/c/house-prices-advanced-regression-techniques
+
+1.	Data preparation, exploration, visualization
+1.	Remove unnecessary columns 
+2.	Data type changes 
+3.	Imputing missing values
+a.	Categorical/ordinal features for replacing with None
+b.	Numerical features for replacing with 0
+c.	Replacing features with few missing values with the most frequent value 
+d.	Replace ‘LotFrontage’ NaN values with the median of other ‘LotFrontage’ values in its neighborhood
+4.	Outlier removal
+a.	Using a quantile method removing only rows with extreme values vs SalePrice
+b.	Will revise with a manual method based on feature vs target plots
+5.	Removing multicollinear features
+a.	Will only remove ‘LowQualFinSF’ since it is not correlated with ‘SalePrice’ and also will not be used in feature engineering
+6.	Feature scaling
+a.	Box-cox scaling on numerical features with |skew|>0.5
+b.	log(1+x) scaling on ‘SalePrice’
+7.	Adding new features
+a.	‘TotalSF’ ‘YrBuiltRemod’ ‘TotalBath’ ‘TotalPorch’ 
+b.	Binary features for ‘PoolArea’, ‘2ndFlrSF’, ‘GarageArea’, ‘TotalBsmtSF’, ‘Fireplaces’
+8.	Encoding ordinal categorical variables manually
+9.	Encoding nominal categorical variables through dummy encoding
+10.	Columns not present in either test or train sets were added to each other so that they have the same number of features.
+These modifications were coded as functions and applied to both train and test datasets. 
+2.	Review research design and modeling methods
+I create a function to evaluate the root mean squared error through 5-fold cross validation of the models created. Each model is passed through a RobustScaler preprocessing step, and then fitted. Predicted values are generated on the test set, and have (expX – 1) applied to invert the log(1+x) on the dependent variables. 
+1.	OLS Linear Regression
+a.	LinearRegression fits a linear model with coefficients for each feature to minimize the residual sum of squares between observed targets and predicted targets
+b.	No regularization
+2.	Linear regression with restricted features
+a.	I use Recursive Feature Elimination to reduce the number of variables to a limited set that are most relevant in predicting the target variable
+b.	hyperparameter tuning on n_features_to_select through GridSearchCV
+3.	LASSO
+a.	Model penalized for sum of absolute values of weights, so many features will be weighted to 0. 
+b.	L1 regularization will make overfitting less likely.
+c.	model complexity decreases with higher alpha as more feature coefficients are set to 0.  
+d.	will have to do some hyperparameter tuning on alpha through GridSearchCV
+I predict that each subsequent model will produce less error and a better Kaggle score when fitted to the test dataset.
+3.	Review results, evaluate models
+For RFE, 89 features are found to be the best to select.
+For Lasso, an alpha of 0.0007210526315789474 was found to be good. 
+MODEL	RMSE MEAN	RMSE STD
+OLS 	0.1182	0.0073
+RFE	0.1210	0.0172
+LASSO	0.1090	0.0046
+The model with RFE showed worse fitting than OLS, suggesting that some features that were ranked lower still had an impact on the fit. As expected, the Lasso model showed the best fits. If I had more time or computing power, a better alpha value could be found.
